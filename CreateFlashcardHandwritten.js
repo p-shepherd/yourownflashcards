@@ -50,8 +50,8 @@ const CreateFlashcardHandwritten = () => {
   }
 
   // Generate two random numbers for the path
-  const randomNum1 = getRandomInt(10, 99); // Replace 10 and 99 with your desired range
-  const randomNum2 = getRandomInt(10, 99); // Replace 10 and 99 with your desired range
+  const randomNum1 = getRandomInt(10, 99);
+  const randomNum2 = getRandomInt(10, 99);
 
   const [category, setCategory] = useState("");
 
@@ -121,7 +121,7 @@ const CreateFlashcardHandwritten = () => {
 
         for (const categoryDoc of categoryQuerySnapshot.docs) {
           const categoryData = categoryDoc.data();
-          const categoryName = categoryData.title; // Assuming the field is 'title'
+          const categoryName = categoryData.title;
 
           const subcategoryCollectionRef = collection(
             categoryDoc.ref,
@@ -133,7 +133,7 @@ const CreateFlashcardHandwritten = () => {
 
           for (const subcategoryDoc of subcategoryQuerySnapshot.docs) {
             const subcategoryData = subcategoryDoc.data();
-            const subcategoryName = subcategoryData.subcategoryName; // Assuming the field is 'subcategoryName'
+            const subcategoryName = subcategoryData.subcategoryName;
 
             // Include category name in the format: "Subcategory(Category)"
             formattedData.push({
@@ -156,7 +156,7 @@ const CreateFlashcardHandwritten = () => {
       if (!state.isConnected) {
         // User has lost internet connection
         // Log out the user and redirect to login screen
-        // (You may also want to save the current state before logging out)
+
         auth
           .signOut()
           .then(() => {
@@ -341,22 +341,21 @@ const CreateFlashcardHandwritten = () => {
     if (endIndex > 0) {
       selectedValue = value.substring(0, endIndex).trim();
     }
-    setSelected(selectedValue); // Assuming setSelected is your state setting function
+    setSelected(selectedValue);
 
     // Extracting the text inside '()'
     const match = value.match(/\((.*?)\)/);
     if (match && match[1]) {
-      setCategory(match[1]); // Assuming setCategoryName is your state setting function
+      setCategory(match[1]);
     } else {
-      // Handle cases where there are no parentheses or no text within them
-      setCategory(""); // or any default value you prefer
+      setCategory("");
     }
   };
 
-  console.log(paths2 + "path2");
-  console.log(paths + "path");
-  console.log(currentPath + "currentPath");
-  console.log(currentPath2 + "currentPath2");
+  // console.log(paths2 + "path2");
+  // console.log(paths + "path");
+  // console.log(currentPath + "currentPath");
+  // console.log(currentPath2 + "currentPath2");
   return (
     <SafeAreaView style={[styles.container, { marginTop: statusBarHeight }]}>
       <View style={styles.loginContainer2}>

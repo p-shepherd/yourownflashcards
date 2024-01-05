@@ -103,13 +103,12 @@ const CreateFlashcard = () => {
       </View>
     );
   };
-  const [cachedPath, setCachedPath] = useState({});
 
   const createF = async () => {
     // Check if flashcard content is empty
     if (flashcardFront.length === 0 || flashcardBack.length === 0) {
       alert("Flashcards cannot be empty");
-      return; // Prevent further execution
+      return;
     }
 
     // Check if a subcategory is selected
@@ -171,7 +170,7 @@ const CreateFlashcard = () => {
 
         for (const categoryDoc of categoryQuerySnapshot.docs) {
           const categoryData = categoryDoc.data();
-          const categoryName = categoryData.title; // Assuming the field is 'title'
+          const categoryName = categoryData.title;
 
           const subcategoryCollectionRef = collection(
             categoryDoc.ref,
@@ -183,7 +182,7 @@ const CreateFlashcard = () => {
 
           for (const subcategoryDoc of subcategoryQuerySnapshot.docs) {
             const subcategoryData = subcategoryDoc.data();
-            const subcategoryName = subcategoryData.subcategoryName; // Assuming the field is 'subcategoryName'
+            const subcategoryName = subcategoryData.subcategoryName;
 
             // Include category name in the format: "Subcategory(Category)"
             formattedData.push({
@@ -237,15 +236,14 @@ const CreateFlashcard = () => {
     if (endIndex > 0) {
       selectedValue = value.substring(0, endIndex).trim();
     }
-    setSelected(selectedValue); // Assuming setSelected is your state setting function
+    setSelected(selectedValue);
 
     // Extracting the text inside '()'
     const match = value.match(/\((.*?)\)/);
     if (match && match[1]) {
-      setCategory(match[1]); // Assuming setCategoryName is your state setting function
+      setCategory(match[1]);
     } else {
-      // Handle cases where there are no parentheses or no text within them
-      setCategory(""); // or any default value you prefer
+      setCategory("");
     }
   };
 
@@ -260,20 +258,25 @@ const CreateFlashcard = () => {
 
   const [focusSide, setFocusSide] = useState("front");
 
-  // Modify the handleFocus functions
+  const scrollViewRef = useRef();
 
   const handleFocus = () => {
     if (textInputRef.current) {
       textInputRef.current.focus();
     }
     setFocusSide("front");
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 300);
   };
-
   const handleFocus2 = () => {
     if (textInputRef2.current) {
       textInputRef2.current.focus();
     }
     setFocusSide("back");
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 300);
   };
 
   // Function to render GestureFlipView based on focus
@@ -295,6 +298,7 @@ const CreateFlashcard = () => {
   return (
     <SafeAreaView style={[styles.container, { marginTop: statusBarHeight }]}>
       <KeyboardAwareScrollView
+        ref={scrollViewRef}
         scrollEnabled={isBreakpointCrossed}
         style={{ backgroundColor: "#fefefa" }}
       >
@@ -350,6 +354,7 @@ const CreateFlashcard = () => {
           />
 
           <TouchableOpacity
+            ref={textInputRef}
             onPress={createF}
             style={[styles.buttonLogin, { width: 100, marginTop: 20 }]}
           >

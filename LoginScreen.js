@@ -31,7 +31,7 @@ import { useNavigation } from "@react-navigation/core";
 import Logo from "./assets/newLogo.svg";
 
 StatusBar.setTranslucent(true);
-StatusBar.setBackgroundColor("white"); // Set this to match your app's background color if necessary
+StatusBar.setBackgroundColor("white");
 
 const LoginScreen = () => {
   useEffect(() => {

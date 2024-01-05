@@ -30,20 +30,9 @@ import {
   query,
   getDocs,
   deleteDoc,
-  where,
-  userDocSnap,
 } from "firebase/firestore";
 import { auth, firestore } from "./firebase";
-import Animated, {
-  Extrapolate,
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from "react-native-reanimated";
-import GestureFlipView from "react-native-gesture-flip-card";
-import { Svg, Path } from "react-native-svg";
+
 import NetInfo from "@react-native-community/netinfo";
 import { deviceWidth, deviceHeight } from "./styles";
 
@@ -179,8 +168,8 @@ const EditCategories = ({ route, navigation }) => {
   };
 
   const alphanumericAndEmojiRegex = /^[A-Za-z\s\p{Emoji}]+$/u;
-  console.log(selected + "selected");
-  console.log(lastClicked);
+  // console.log(selected + "selected");
+  // console.log(lastClicked);
   const saveChanges = async () => {
     try {
       const dataCollectionRef = collection(firestore, `users/${uid}/data`);

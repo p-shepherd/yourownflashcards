@@ -52,7 +52,7 @@ const CreateCategory = ({ route }) => {
     // Existing logic to generate and set a new bright color
     setColor(generateBrightColor());
 
-    // New logic to toggle colorPickerVisible
+    // toggle colorPickerVisible
     setColorPickerVisible(false);
     const timer = setTimeout(() => {
       setColorPickerVisible(true);
@@ -76,12 +76,11 @@ const CreateCategory = ({ route }) => {
       }
     });
 
-    // Cleanup function
     return () => {
       // Clear the color picker timeout
       netInfoUnsubscribe(); // Unsubscribe from network changes
     };
-  }, []); // The empty array ensures this effect runs only once when the component mounts
+  }, []);
 
   const backHome = () => {
     navigation.navigate("MainScreen");
@@ -113,7 +112,7 @@ const CreateCategory = ({ route }) => {
 
     if (user) {
       try {
-        // Function to check for trailing spaces and validate names
+        //  check for trailing spaces and validate names
         const checkForTrailingSpaceAndValidate = (name, type) => {
           if (/ $/.test(name)) {
             alert(

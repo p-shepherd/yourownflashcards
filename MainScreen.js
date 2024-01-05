@@ -2,10 +2,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   StatusBar,
   SectionList,
-  Dimensions,
   SafeAreaView,
   Image,
-  StyleSheet,
   View,
   TouchableOpacity,
   Text,
@@ -13,44 +11,26 @@ import {
   Platform,
 } from "react-native";
 
-import {
-  PanGestureHandler,
-  State,
-  GestureHandlerRootView,
-} from "react-native-gesture-handler";
-import { runOnJS } from "react-native-reanimated";
 import styles from "./styles";
 
 import { auth, firestore } from "./firebase";
 import { useNavigation } from "@react-navigation/core";
 import { useFocusEffect } from "@react-navigation/native";
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  setDoc,
-  collection,
-  getDocs,
-} from "firebase/firestore";
+import { doc, collection, getDocs } from "firebase/firestore";
 import tinycolor from "tinycolor2";
-import Dot from "./assets/dot.svg";
+
 import Flash from "./assets/flash.svg";
 import Logo from "./assets/newLogo.svg";
-import SvgUri from "react-native-svg";
+
 import { deviceWidth, deviceHeight } from "./styles";
 import Profile from "./assets/profile.svg";
 import Info from "./assets/info.svg";
 import NetInfo from "@react-native-community/netinfo";
 
 StatusBar.setTranslucent(true);
-StatusBar.setBackgroundColor("white"); // Set this to match your app's background color if necessary
+StatusBar.setBackgroundColor("white");
 
 const MainScreen = () => {
-  //variables for SetCategoriesAmount
-  // SetSubcategoriesAmount
-  // SetFlashcardsAmount
-  // SetLearnedFlashcardsAmount|
-
   const [categoriesAmount, SetCategoriesAmount] = useState(0);
   const [subcategoriesAmount, SetSubcategoriesAmount] = useState(0);
   const [flashcardsAmount, SetFlashcardsAmount] = useState(0);
@@ -68,9 +48,7 @@ const MainScreen = () => {
 
   const handleSessionNavigation = async (subcategoryName, categoryName) => {
     try {
-      // Update the lastClickedSubcategory and InCategory fields in the user's document
-
-      // If the update is successful, navigate to the "Session" screen
+      // navigate to the "Session" screen
       navigation.navigate("Session", {
         subcategoryNameSession: subcategoryName,
         categoryNameSession: categoryName,
@@ -79,7 +57,6 @@ const MainScreen = () => {
       });
     } catch (error) {
       console.error("Error updating document:", error);
-      // Handle error or show an error message to the user
     }
   };
 
@@ -115,7 +92,7 @@ const MainScreen = () => {
       if (!state.isConnected) {
         // User has lost internet connection
         // Log out the user and redirect to login screen
-        // (You may also want to save the current state before logging out)
+
         auth
           .signOut()
           .then(() => {
@@ -150,7 +127,6 @@ const MainScreen = () => {
 
       for (const categoryDoc of categoryQuerySnapshot.docs) {
         const categoryData = categoryDoc.data();
-        console.log("Category Data:", categoryData); // Debug log for each category
 
         const subcategoryCollectionRef = collection(
           categoryDoc.ref,
@@ -162,7 +138,6 @@ const MainScreen = () => {
 
         const subcategories = subcategoryQuerySnapshot.docs.map((subDoc) => {
           const subData = subDoc.data();
-          console.log("Subcategory Data:", subData); // Debug log for each subcategory
 
           // Counting flashcards and learned flashcards
           const flashcards = subData.flashcards || [];
@@ -172,12 +147,11 @@ const MainScreen = () => {
           ).length;
 
           return {
-            name: subData.subcategoryName, // Ensure this field exists
+            name: subData.subcategoryName,
           };
         });
 
         if (categoryData.title && categoryData.color) {
-          // Check if title and color exist
           categories.unshift({
             title: categoryData.title,
             color: categoryData.color,
@@ -191,9 +165,7 @@ const MainScreen = () => {
       }
 
       setUserData(categories);
-      console.log("Fetched userData:", categories); // Debug log for final userData
 
-      // Setting state for counts
       SetCategoriesAmount(categoryQuerySnapshot.size - 1);
       SetSubcategoriesAmount(totalSubcategories);
       SetFlashcardsAmount(totalFlashcards);
@@ -215,7 +187,7 @@ const MainScreen = () => {
           console.log("that worked");
           fetchData2();
 
-          // Optional: Reset the parameter so it doesn't refetch if it's not needed
+          //  Reset the parameter so it doesn't refetch if it's not needed
           navigation.setParams({ dataUpdated: false });
         }
       });
@@ -225,7 +197,6 @@ const MainScreen = () => {
   );
 
   const makeColorStronger = (color) => {
-    // This is an example, you can adjust the method and parameters as needed
     return tinycolor(color)
       .saturate(20) // Increase the saturation
       .lighten(-5) // Increase the brightness
@@ -237,7 +208,7 @@ const MainScreen = () => {
     color: category.color,
     sectioncolorstronger: makeColorStronger(category.color),
     data: category.data.map((subcategory) => ({
-      name: subcategory.name, // Ensuring this matches the field name from `fetchData2`
+      name: subcategory.name,
       color: category.color,
     })),
   }));
@@ -250,21 +221,14 @@ const MainScreen = () => {
     return (r * 299 + g * 587 + b * 114) / 1000;
   };
 
-  // Function to determine the text color (black or white) based on the background color
-  const getTextColorBasedOnBackground = (backgroundColor) => {
-    const brightness = calculateBrightness(backgroundColor);
-    return brightness > 125 ? "black" : "white"; // Threshold set at 125 (adjust as needed)
-  };
+  // // Function to determine the text color (black or white) based on the background color
+  // const getTextColorBasedOnBackground = (backgroundColor) => {
+  //   const brightness = calculateBrightness(backgroundColor);
+  //   return brightness > 125 ? "black" : "white"; // Threshold set at 125 (adjust as needed)
+  // };
 
   const handleEditNavigation = async (itemName) => {
-    const uid = auth.currentUser.uid;
-
     try {
-      const userRef = doc(firestore, "users", uid);
-      // Update the lastClickedSubcategory field in the user's document
-
-      // If the update is successful, navigate to the "EditCategories" screen
-      // Pass 'itemName' as a parameter to the 'EditCategories' screen
       navigation.navigate("EditCategories", {
         fetchData2: fetchData2,
         itemName: itemName,
@@ -272,7 +236,6 @@ const MainScreen = () => {
       });
     } catch (error) {
       console.error("Error updating document:", error);
-      // Handle error or show an error message to the user
     }
   };
   const breakpoint = 768;
@@ -281,6 +244,7 @@ const MainScreen = () => {
   const logoHeight = deviceWidth > breakpoint ? 500 : 300;
 
   console.log(auth.currentUser?.email);
+
   console.log(auth.currentUser?.uid);
   return (
     <SafeAreaView style={[styles.container, { marginTop: statusBarHeight }]}>
@@ -473,13 +437,13 @@ const MainScreen = () => {
                   style={[
                     styles.sectionHeader,
                     {
-                      // borderBottomWidth: 8,  // Adjust the width as needed
-                      // borderBottomColor: section.color, // Change the color as needed
+                      // borderBottomWidth: 8,
+                      // borderBottomColor: section.color,
                       // color: 'black',
 
                       // borderBottomRightRadius: 100,
 
-                      backgroundColor: section.color, // Background color of the section headers
+                      backgroundColor: section.color,
                     },
                   ]}
                 >
@@ -492,7 +456,7 @@ const MainScreen = () => {
                       // margin: 0,
                       // borderBottomWidth: 6,
                       // borderBottomColor: section.color,
-                      // width: '100%', // Adjust this to change the length of the bottom border
+                      // width: '100%',
                     }
                   }
                 ></View>

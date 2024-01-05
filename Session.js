@@ -2,16 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   Alert,
   Dimensions,
-  Pressable,
   View,
   Text,
   SafeAreaView,
   Platform,
   StatusBar,
-  TextInput,
   TouchableOpacity,
   Image,
-  Button,
   ScrollView,
   Modal,
   TouchableWithoutFeedback,
@@ -20,15 +17,7 @@ import { StyleSheet } from "react-native";
 import styles from "./styles";
 import { SelectList } from "react-native-dropdown-select-list";
 import { useNavigation } from "@react-navigation/core";
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  setDoc,
-  collection,
-  query,
-  getDocs,
-} from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { auth, firestore } from "./firebase";
 import Animated, {
   Extrapolate,
@@ -49,7 +38,7 @@ import Box3 from "./assets/3flashbox.svg";
 import Box4 from "./assets/4flashbox.svg";
 import Box5 from "./assets/5flashbox.svg";
 import Crown from "./assets/crown.svg";
-import RainbowCrown from "./assets/rainbow.svg";
+
 import Wrong from "./assets/wrong.svg";
 import Right from "./assets/right.svg";
 import tinycolor from "tinycolor2";
@@ -58,7 +47,7 @@ import BoxB from "./assets/boxB.svg";
 import BoxC from "./assets/boxC.svg";
 import BoxD from "./assets/boxD.svg";
 import BoxE from "./assets/boxE.svg";
-import BoxF from "./assets/BoxF.svg";
+
 import CrownA from "./assets/crownA.svg";
 import NetInfo from "@react-native-community/netinfo";
 
@@ -80,7 +69,7 @@ const Session = ({ route }) => {
   const [boxFour, setBoxFour] = useState("black");
   const [boxFive, setBoxFive] = useState("black");
   const [boxCrown, setBoxCrown] = useState("black");
-  const [checker, setChecker] = useState(false);
+
   const [showLastClicked, setShowLastClicked] = useState("");
   const [colorTheme, setColorTheme] = useState("black");
   const [showRainbowCrown, setShowRainbowCrown] = useState(false);
@@ -100,8 +89,7 @@ const Session = ({ route }) => {
   const [EColor, setEColor] = useState("black");
   const [FColor, setFColor] = useState("black");
   const [currentBracket, setCurrentBracket] = useState(0);
-  const [lastClickedCategory, setLastClickedCategory] = useState("");
-  const [lastClicked, setLastClicked] = useState("");
+
   const spin = useSharedValue(0);
 
   const rStyle = useAnimatedStyle(() => {
@@ -126,19 +114,14 @@ const Session = ({ route }) => {
     };
   }, []);
 
-  const [selected, setSelected] = useState("");
-
   const [flashcardFront, setFlashcardFront] = useState("");
   const [flashcardBack, setFlashcardBack] = useState("");
 
   const uid = auth.currentUser.uid;
   const [paths, setPaths] = useState([]);
-  const [currentPath, setCurrentPath] = useState([]);
 
   const [paths2, setPaths2] = useState([]);
-  const [currentPath2, setCurrentPath2] = useState([]);
 
-  const [data, setData] = useState([]);
   const [isClearButtonClicked, setClearButtonClicked] = useState(false);
   const renderFront = () => {
     // Check if the flashcardFront contains more than three commas
@@ -292,7 +275,7 @@ const Session = ({ route }) => {
     return counts;
   };
 
-  // wylapuje dobre ilosci flashcardow
+  // wylapuje dobre ilosci flashcardow (flashcard ammounts)
   const fetchData = async () => {
     try {
       // Direct reference to the subcategory document
@@ -322,18 +305,17 @@ const Session = ({ route }) => {
 
         if (flashcardsHolder.length < 1) {
           console.log("No flashcards");
-          // Handle the case where there are no flashcards
-          // e.g., setModalNo(true), setModalVisible(false), etc.
         }
       } else {
         console.log("Subcategory not found!");
-        // Handle the case where the subcategory document doesn't exist
+        navigation.navigate("MainScreen");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
+  // Fetch flashcards for the session based on selected brackets
   const fetchFlashcardsByBrackets = async (selectedBrackets) => {
     try {
       // Direct reference to the subcategory document
@@ -487,7 +469,7 @@ const Session = ({ route }) => {
           if (currentFlashcard == 1) {
             console.log("answered wrong");
             setBoxOne("red");
-            //wait for 1 second and set it back to black
+
             setTimeout(() => {
               setBoxOne("black");
             }, 1000);
@@ -503,9 +485,10 @@ const Session = ({ route }) => {
           })
         );
 
-        console.log(sessionFlashcards);
-        console.log("");
-        console.log(relevantFlashcards);
+        // console.log(sessionFlashcards);
+        // console.log("");
+        // console.log(relevantFlashcards);
+
         // Find the next untrained flashcard and update the state
         const nextUntrainedFlashcard = sessionFlashcards.find(
           (flashcard) =>
@@ -518,8 +501,6 @@ const Session = ({ route }) => {
           setCurrentDate(nextUntrainedFlashcard.creationDate);
           setFlashcardBack(nextUntrainedFlashcard.backContent);
         } else {
-          // Handle the scenario where there are no more untrained flashcards
-          // For example, clear the display or show a completion message
           setCurrentFlashcard(0);
           setFlashcardFront("");
           setCurrentBracket(0);
@@ -706,7 +687,6 @@ const Session = ({ route }) => {
       setModalVisible(false);
       fetchFlashcardsByBrackets(selectedBrackets); // Fetch flashcards for the session based on selected brackets
     } else {
-      // Alert or handle if no checkbox is selected
     }
   };
 
@@ -739,9 +719,9 @@ const Session = ({ route }) => {
         // Update the subcategory document with the modified flashcards
         await updateDoc(subcategoryDocRef, { flashcards: updatedFlashcards });
 
-        console.log(
-          "All learned flashcards from box 6 have been moved back to box 1."
-        );
+        // console.log(
+        //   "All learned flashcards from box 6 have been moved back to box 1."
+        // );
         alert(
           "All learned flashcards from box 6 have been moved back to box 1."
         );

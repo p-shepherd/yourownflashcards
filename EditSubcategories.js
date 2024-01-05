@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   Alert,
-  Dimensions,
-  Pressable,
   View,
   Text,
   SafeAreaView,
@@ -25,20 +23,11 @@ import {
   updateDoc,
   setDoc,
   collection,
-  query,
   getDocs,
-  where,
   deleteDoc,
 } from "firebase/firestore";
 import { auth, firestore } from "./firebase";
-import Animated, {
-  Extrapolate,
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from "react-native-reanimated";
+
 import GestureFlipView from "react-native-gesture-flip-card";
 import { Svg, Path } from "react-native-svg";
 import { deviceWidth, deviceHeight } from "./styles";
@@ -51,21 +40,18 @@ StatusBar.setBackgroundColor("white");
 const EditSubcategories = ({ route }) => {
   const [selected2, setSelected2] = useState("");
   const [paths, setPaths] = useState([]);
-  const [currentPath, setCurrentPath] = useState([]);
+
   const [category, setCategory] = useState("");
   const { fetchData2, itemName, color, categoryName } = route.params;
   const [categoryName2, setCategoryName2] = useState("");
   const [paths2, setPaths2] = useState([]);
-  const [currentPath2, setCurrentPath2] = useState([]);
+
   console.log(categoryName2 + "itsme");
   const navigation = useNavigation();
-
-  const [move, setMove] = useState("");
 
   const [modalVisible, setModalVisible] = useState(false);
 
   const [data, setData] = useState([]);
-  const [userData, setUserData] = useState([]);
 
   const [selected, setSelected] = useState("");
   const [lastClicked, setLastClicked] = useState("");
@@ -177,16 +163,15 @@ const EditSubcategories = ({ route }) => {
     if (endIndex > 0) {
       selectedValue3 = value.substring(0, endIndex).trim();
     }
-    setSelected2(selectedValue3); // Assuming setSelected is your state setting function
+    setSelected2(selectedValue3);
     console.log(selected2);
     // Extracting the text inside '()'
     const match = value.match(/\((.*?)\)/);
     if (match && match[1]) {
-      setCategory(match[1]); // Assuming setCategoryName is your state setting function
+      setCategory(match[1]);
       console.log(category);
     } else {
-      // Handle cases where there are no parentheses or no text within them
-      setCategory(""); // or any default value you prefer
+      setCategory("");
     }
   };
 
@@ -200,7 +185,7 @@ const EditSubcategories = ({ route }) => {
 
       for (const categoryDoc of categoryQuerySnapshot.docs) {
         const categoryData = categoryDoc.data();
-        const categoryName = categoryData.title; // Assuming the field is 'title'
+        const categoryName = categoryData.title;
 
         const subcategoryCollectionRef = collection(
           categoryDoc.ref,
@@ -212,7 +197,7 @@ const EditSubcategories = ({ route }) => {
 
         for (const subcategoryDoc of subcategoryQuerySnapshot.docs) {
           const subcategoryData = subcategoryDoc.data();
-          const subcategoryName = subcategoryData.subcategoryName; // Assuming the field is 'subcategoryName'
+          const subcategoryName = subcategoryData.subcategoryName;
 
           // Include category name in the format: "Subcategory(Category)"
           formattedData.push({
