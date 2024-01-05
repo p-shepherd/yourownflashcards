@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "FlashcardProject",
-    "slug": "FlashcardProject",
+    "name": "YOF",
+    "slug": "fiszki",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/yofyof.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/logofiszki.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -15,16 +15,24 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.shepherdpaul.FlashcardProject"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/yofyof.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.shepherdpaul.FlashcardProject"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "559b27d0-84e6-498e-9aa5-0b37192bfd37"
+      }
+    },
+    "owner": "shepherdpaul"
   }
 }
