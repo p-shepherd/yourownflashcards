@@ -48,7 +48,8 @@ const CreateFlashcard = () => {
 
   const navigation = useNavigation();
 
-  const backHome = () => {
+  const backHome = async () => {
+    await pushFlashcardstoDatabase();
     navigation.navigate("MainScreen");
   };
 
@@ -84,6 +85,8 @@ const CreateFlashcard = () => {
   const [flashcardFront, setFlashcardFront] = useState("");
   const [flashcardBack, setFlashcardBack] = useState("");
 
+  const [waitingFlashcards, setWaitingFlashcards] = useState([]);
+
   const uid = auth.currentUser.uid;
 
   const [data, setData] = useState([]);
@@ -104,6 +107,34 @@ const CreateFlashcard = () => {
     );
   };
 
+  const pushFlashcardstoDatabase = async () => {
+    console.log("pushing flashcards to database");
+    if (waitingFlashcards.length === 0 || !selected) {
+      return; // Do nothing if there are no flashcards to push or no category selected
+    }
+
+    const subcategoryDocRef = doc(
+      firestore,
+      `users/${uid}/data/${category}/subcategory`,
+      selected
+    );
+
+    try {
+      const subcategoryDocSnap = await getDoc(subcategoryDocRef);
+      const flashcardsHolder = subcategoryDocSnap.exists()
+        ? subcategoryDocSnap.data().flashcards || []
+        : [];
+
+      // Add the waiting flashcards and update the document
+      flashcardsHolder.push(...waitingFlashcards);
+      await updateDoc(subcategoryDocRef, { flashcards: flashcardsHolder });
+
+      setWaitingFlashcards([]); // Clear the waitingFlashcards array
+    } catch (error) {
+      console.error("Error pushing flashcards to database:", error);
+    }
+  };
+
   const createF = async () => {
     // Check if flashcard content is empty
     if (flashcardFront.length === 0 || flashcardBack.length === 0) {
@@ -119,17 +150,6 @@ const CreateFlashcard = () => {
 
     try {
       // Direct reference to the subcategory document
-      const subcategoryDocRef = doc(
-        firestore,
-        `users/${uid}/data/${category}/subcategory`,
-        selected
-      );
-
-      // Fetch existing flashcards
-      const subcategoryDocSnap = await getDoc(subcategoryDocRef);
-      const flashcardsHolder = subcategoryDocSnap.exists()
-        ? subcategoryDocSnap.data().flashcards || []
-        : [];
 
       // Create the new flashcard
       const newFlashcard = {
@@ -143,9 +163,8 @@ const CreateFlashcard = () => {
         trained: false,
       };
 
-      // Add the new flashcard and update the document
-      flashcardsHolder.push(newFlashcard);
-      await updateDoc(subcategoryDocRef, { flashcards: flashcardsHolder });
+      //push flashcards to waitingFlashcards
+      setWaitingFlashcards([...waitingFlashcards, newFlashcard]);
 
       // Reset input fields
       setFlashcardBack("");
@@ -159,7 +178,7 @@ const CreateFlashcard = () => {
 
   useEffect(() => {
     let isMounted = true; // Flag to manage cleanup and avoid setting state on unmounted component
-
+    console.log("useEffect called");
     const fetchData = async () => {
       try {
         const userRef = doc(firestore, "users", uid);
@@ -204,7 +223,7 @@ const CreateFlashcard = () => {
       fetchData(); // Call the function only if uid is present
     }
 
-    const unsubscribe = NetInfo.addEventListener((state) => {
+    const unsubscribeNetInfo = NetInfo.addEventListener((state) => {
       if (!state.isConnected && isMounted) {
         auth
           .signOut()
@@ -220,16 +239,32 @@ const CreateFlashcard = () => {
       }
     });
 
+    const unsubscribeBeforeRemove = navigation.addListener(
+      "beforeRemove",
+      async (e) => {
+        // Prevent default behavior of leaving the screen
+        e.preventDefault();
+
+        // Push flashcards to the database
+        await pushFlashcardstoDatabase();
+
+        // After flashcards are pushed, continue with the default behavior
+        navigation.dispatch(e.data.action);
+      }
+    );
+
     return () => {
       isMounted = false;
-      unsubscribe(); // Cleanup subscription
+      unsubscribeNetInfo(); // Cleanup NetInfo subscription
+      unsubscribeBeforeRemove(); // Cleanup navigation listener
     };
-  }, [uid]); // Dependency array ensures useEffect is called again if uid changes
+  }, [uid, navigation]); // Dependency array ensures useEffect is called again if uid changes
 
   const textInputRef = useRef(null);
   const textInputRef2 = useRef(null);
 
-  const handleSelect = (value) => {
+  const handleSelect = async (value) => {
+    await pushFlashcardstoDatabase();
     // Extracting the text before '('
     const endIndex = value.indexOf("(");
     let selectedValue = value;
@@ -247,8 +282,8 @@ const CreateFlashcard = () => {
     }
   };
 
-  console.log(selected + "selected");
-  console.log(category);
+  // console.log(selected + "selected");
+  // console.log(category);
 
   const [isInteractingWithCard, setIsInteractingWithCard] = useState(false);
 

@@ -224,6 +224,16 @@ const EditSubcategories = ({ route }) => {
   console.log(flashcards);
   const alphanumericAndEmojiRegex = /^[A-Za-z\s\p{Emoji}]+$/u;
   const saveChanges = async () => {
+    if (selected === "") {
+      alert("Please enter a subcategory name");
+      return;
+    }
+
+    if (selected === lastClicked) {
+      alert("No changes made");
+      return;
+    }
+
     try {
       if (!alphanumericAndEmojiRegex.test(selected)) {
         alert(

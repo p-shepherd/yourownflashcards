@@ -171,6 +171,16 @@ const EditCategories = ({ route, navigation }) => {
   // console.log(selected + "selected");
   // console.log(lastClicked);
   const saveChanges = async () => {
+    if (selected === "") {
+      alert("Please enter a category name");
+      return;
+    }
+
+    if (selected === lastClicked) {
+      alert("No changes made");
+      return;
+    }
+
     try {
       const dataCollectionRef = collection(firestore, `users/${uid}/data`);
       const categoryQuerySnapshot = await getDocs(dataCollectionRef);
